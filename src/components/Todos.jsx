@@ -1,38 +1,18 @@
-import { useState, useEffect } from "react";
 import TodoItem from "./TodoItem";
+import { useTodos } from "./store/todo-context";
 
 const Todos = () => {
-  const [todoList, setTodoList] = useState([]);
-
-  useEffect(() => {
-    fetch("https://api.nstack.in/v1/todos?page=1&limit=10")
-      .then((response) => response.json())
-      .then((todos) => {
-        console.log("DATA", todos.items);
-        setTodoList(todos.items);
-      });
-  }, []);
-
-  const handleChange = (todoId, newTitle) => {
-    console.log('HANDLE', todoId, newTitle)
-    setTodoList((prev) =>
-      prev.map((todo) =>
-        todo._id === todoId ? { ...todo, title: newTitle } : todo
-      )
-    );
-  };
-
-  console.log("DATA", todoList);
-
+  const { todoList, isLoading, handleInputChange } = useTodos();
 
   return (
-    <div className="w-full max-w-[48rem] border p-4 space-y-4">
+    <div className="w-full max-w-[48rem] p-4 flex flex-col items-center space-y-4 overflow-y-auto max-h-[60vh]">
+      {isLoading && <h3>Loading todos...</h3>}
       {todoList.map((todo) => (
         <TodoItem
-          key={todo._id} 
+          key={todo._id}
           id={todo._id}
           title={todo.title}
-          handleChange={handleChange} 
+          handleChange={handleInputChange}
         />
       ))}
     </div>
