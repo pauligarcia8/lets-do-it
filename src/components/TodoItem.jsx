@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 
-const TodoItem = ({ id, title, handleChange }) => {
+const TodoItem = ({ id, title, isCompleted, handleChange, handleDeleteTodo }) => {
   const [edit, setEdit] = useState(false);
   const inputRef = useRef(null);
 
-  const handleEditClick = () => {
+  const handleEdit = () => {
     setEdit(!edit);
-    setTimeout(() => inputRef.current?.focus(), 0); 
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   return (
@@ -20,8 +20,13 @@ const TodoItem = ({ id, title, handleChange }) => {
         disabled={!edit}
       />
       <div className="flex items-center justify-center px-2">
-        <input type="checkbox" className="w-4 h-4" />
-        <button className="px-4 cursor-pointer" onClick={handleEditClick}>
+        <input
+          type="checkbox"
+          className="w-4 h-4"
+          onChange={(e) => handleChange(id, e.target.checked)}
+          checked={isCompleted}
+        />
+        <button className="px-4 cursor-pointer" onClick={handleEdit}>
           {!edit ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +57,7 @@ const TodoItem = ({ id, title, handleChange }) => {
             </svg>
           )}
         </button>
-        <button className="cursor-pointer">
+        <button className="cursor-pointer" onClick={() => handleDeleteTodo(id)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
