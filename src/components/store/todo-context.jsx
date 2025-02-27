@@ -6,6 +6,7 @@ export const TodoContext = createContext({
   isLoading: true,
   handleInputChange: () => {},
   addNewTodo: () => {},
+  editTodo: () => {},
   deleteTodo: () => {},
 });
 
@@ -16,13 +17,22 @@ const TodosProvider = ({ children }) => {
   const [todoList, setTodoList] = useState([]);
 
   const fetchTodos = async () => {
-    setIsLoading(true);
-    const response = await fetch(
-      "https://api.nstack.in/v1/todos?page=1&limit=20"
-    );
-    const data = await response.json();
-    setTodoList(data.items);
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://api.nstack.in/v1/todos?page=1&limit=20"
+      );
+
+      if (!response.ok) {
+        throw new Error("Error fetching the todo list");
+      }
+      const data = await response.json();
+      setTodoList(data.items);
+    } catch (error) {
+      console.log("Error: ", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -30,72 +40,84 @@ const TodosProvider = ({ children }) => {
   }, []);
 
   const editTodo = async (id, updatedFields) => {
-    setTodoList((prev) =>
-      prev.map((item) =>
-        item._id === id ? { ...item, ...updatedFields } : item
-      )
-    );
-
     const todo = todoList.find((item) => item._id === id);
     if (!todo) return;
 
-    const updatedTodo = { ...todo, ...updatedFields };
-    const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedTodo),
-    });
-    const data = await response.json();
-    console.log("DATA DESDE EDIT", data);
-  };
-
-  const handleUpdateField = (id, updatedFields) => {
     setTodoList((prev) =>
       prev.map((item) =>
         item._id === id ? { ...item, ...updatedFields } : item
       )
     );
-    editTodo(id, updatedFields);
+
+    const updatedTodo = { ...todo, ...updatedFields };
+
+    try {
+      const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTodo),
+      });
+      if (!response.ok) {
+        throw new Error("Error updating the todo list");
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   const handleInputChange = (id, value) => {
-    console.log("A CAMBIAR", id, value);
+
     if (typeof value === "boolean") {
-      handleUpdateField(id, { is_completed: value });
+      editTodo(id, { is_completed: value });
     } else {
-      handleUpdateField(id, { title: value });
+      editTodo(id, { title: value });
     }
   };
 
   const addNewTodo = async (value) => {
-    const response = await fetch("https://api.nstack.in/v1/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: value,
-        description: "",
-        is_completed: false,
-      }),
-    });
-    const data = await response.json();
-    fetchTodos();
+    try {
+      const response = await fetch("https://api.nstack.in/v1/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: value,
+          description: "",
+          is_completed: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Something went wrong!");
+      }
+
+      const data = await response.json();
+      setTodoList((prev) => [...prev, data.data]);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
-  console.log("TodoList", todoList);
 
   const deleteTodo = async (id) => {
-    console.log("DELETE ID", id);
-    const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    fetchTodos();
+    try {
+      const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error deleting the todo");
+      }
+
+      setTodoList((prev) => prev.filter((item) => item._id !== id));
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   //3. Retornamos el objeto provider con su valor para solo importar en App TodoContext y no todo el objeto
@@ -106,6 +128,7 @@ const TodosProvider = ({ children }) => {
         isLoading,
         handleInputChange,
         addNewTodo,
+        editTodo,
         deleteTodo,
       }}
     >

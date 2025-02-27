@@ -1,11 +1,21 @@
 import { useRef, useState } from "react";
+import { useTodos } from "./store/todo-context";
 
-const TodoItem = ({ id, title, isCompleted, handleChange, handleDeleteTodo }) => {
+const TodoItem = ({
+  id,
+  title,
+  isCompleted,
+  handleChange,
+  handleDeleteTodo,
+}) => {
   const [edit, setEdit] = useState(false);
   const inputRef = useRef(null);
+  const [localTitle, setLocalTitle] = useState(title);
+  const { handleInputChange, deleteTodo } = useTodos();
 
   const handleEdit = () => {
     setEdit(!edit);
+    handleInputChange(id, localTitle);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
@@ -15,15 +25,15 @@ const TodoItem = ({ id, title, isCompleted, handleChange, handleDeleteTodo }) =>
         ref={inputRef}
         className="w-full p-2 focus-visible:outline-gray-600"
         type="text"
-        value={title}
-        onChange={(e) => handleChange(id, e.target.value)}
+        value={localTitle}
+        onChange={(e) => setLocalTitle(e.target.value)}
         disabled={!edit}
       />
       <div className="flex items-center justify-center px-2">
         <input
           type="checkbox"
           className="w-4 h-4"
-          onChange={(e) => handleChange(id, e.target.checked)}
+          onChange={(e) => handleInputChange(id, e.target.checked)}
           checked={isCompleted}
         />
         <button className="px-4 cursor-pointer" onClick={handleEdit}>
@@ -57,7 +67,7 @@ const TodoItem = ({ id, title, isCompleted, handleChange, handleDeleteTodo }) =>
             </svg>
           )}
         </button>
-        <button className="cursor-pointer" onClick={() => handleDeleteTodo(id)}>
+        <button className="cursor-pointer" onClick={() => deleteTodo(id)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

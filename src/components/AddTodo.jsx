@@ -5,7 +5,14 @@ const AddTodo = () => {
   const inputRef = useRef(null);
   const { addNewTodo } = useTodos();
 
-   return (
+  const handleAddNewTodo = () => {
+    if (inputRef.current) {
+      addNewTodo(inputRef.current?.value);
+      inputRef.current.value = "";
+    }
+  };
+
+  return (
     <div className="flex flex-col items-center w-full max-w-[48rem] p-4 space-y-4">
       <input
         ref={inputRef}
@@ -13,7 +20,7 @@ const AddTodo = () => {
         type="text"
         placeholder="Add a new todo"
       />
-      <button className="cursor-pointer" onClick={() => addNewTodo(inputRef.current?.value || null)}>
+      <button className="cursor-pointer" onClick={handleAddNewTodo}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
