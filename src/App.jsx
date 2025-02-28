@@ -6,7 +6,7 @@ import Todos from "./components/Todos.jsx";
 function App() {
   return (
     <TodosProvider>
-      <div className="h-screen flex flex-col items-center justify-center mt-5">
+      <div className="h-screen flex flex-col items-center justify-center my-6">
         <h1 className="text-2xl font-bold mb-4">LETS DO IT!</h1>
         <AddTodo />
         <Todos />

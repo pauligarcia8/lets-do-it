@@ -11,10 +11,7 @@ const CompletedTodos = () => {
         {completedTodos.length > 0 ? "COMPLETED!" : `Nothing done yet...`}
       </h1>
       {completedTodos.map((todo) => (
-        <div
-          key={todo.title}
-          className="flex items-center justify-start w-full"
-        >
+        <div key={todo._id} className="flex items-center justify-start w-full">
           <input
             type="checkbox"
             className="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
