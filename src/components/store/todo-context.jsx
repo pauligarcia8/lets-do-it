@@ -68,7 +68,6 @@ const TodosProvider = ({ children }) => {
   };
 
   const handleInputChange = (id, value) => {
-
     if (typeof value === "boolean") {
       editTodo(id, { is_completed: value });
     } else {
