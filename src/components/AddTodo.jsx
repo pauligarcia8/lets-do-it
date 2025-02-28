@@ -1,13 +1,17 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useTodos } from "./store/todo-context";
-
+import ErrorMessage from "./UI/ErrorMessage.jsx";
 const AddTodo = () => {
   const inputRef = useRef(null);
   const { addNewTodo } = useTodos();
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const handleAddNewTodo = () => {
-    if (inputRef.current) {
+    if (inputRef.current?.value === "") {
+      setIsEmpty(true);
+    } else if (inputRef.current) {
       addNewTodo(inputRef.current?.value);
+      setIsEmpty(false);
       inputRef.current.value = "";
     }
   };
@@ -16,11 +20,12 @@ const AddTodo = () => {
     <div className="flex flex-col items-center w-full max-w-[48rem] p-4 space-y-4">
       <input
         ref={inputRef}
-        className="w-full p-2 border border-b-gray-600 focus-visible:outline-gray-600"
+        className="w-full p-2 border border-b-gray-600 focus-visible:outline-gray-600 m-0"
         type="text"
         placeholder="Add a new todo"
       />
-      <button className="cursor-pointer" onClick={handleAddNewTodo}>
+      <ErrorMessage message="You can not add empty values" hidden={isEmpty} />
+      <button className="cursor-pointer my-2" onClick={handleAddNewTodo}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
