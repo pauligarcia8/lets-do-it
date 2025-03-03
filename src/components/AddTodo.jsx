@@ -20,7 +20,7 @@ const AddTodo = () => {
     <div className="flex flex-col items-center w-full max-w-[48rem] p-4 space-y-4">
       <input
         ref={inputRef}
-        className="w-full p-2 border border-b-gray-600 focus-visible:outline-gray-600 m-0"
+        className="w-full p-2 border focus-visible:outline-gray-600 m-0 text-black dark:text-white"
         type="text"
         placeholder="Add a new todo"
       />
