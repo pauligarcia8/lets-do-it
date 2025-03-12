@@ -1,23 +1,34 @@
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import AddTodo from "./components/AddTodo.jsx";
 import CompletedTodos from "./components/CompletedTodos.jsx";
 import Navbar from "./components/NavBar.jsx";
-import { useTheme } from "./components/store/theme-context.jsx";
 import Todos from "./components/Todos.jsx";
 import MouseUp from "./components/UI/MouseUp.jsx";
 
+import { useTheme } from "./components/store/theme-context.jsx";
+
 function App() {
   const { theme } = useTheme();
-  const [scroll, setScroll] = useState(false);
+  const [showScroll, setShowScroll] = useState(false);
   const completedRef = useRef();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 200); // Muestra el botón si el usuario bajó más de 200px
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setScroll(!scroll);
   };
+
   const scrollToBottom = () => {
     completedRef.current?.scrollIntoView({ behavior: "smooth" });
-    setScroll(!scroll);
   };
 
   return (
@@ -40,7 +51,7 @@ function App() {
         <Todos />
       </div>
       <CompletedTodos ref={completedRef} />
-      {scroll && (
+      {showScroll && (
         <div
           onClick={scrollToTop}
           className="fixed bottom-10 right-10 cursor-pointer flex flex-col items-center"
