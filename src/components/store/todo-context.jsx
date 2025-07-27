@@ -20,14 +20,14 @@ const TodosProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://api.nstack.in/v1/todos?page=1&limit=20"
+        "https://crudcrud.com/api/75338d9b2ea44fe4a20829796df7583f/todos"
       );
 
       if (!response.ok) {
         throw new Error("Error fetching the todo list");
       }
       const data = await response.json();
-      setTodoList(data.items);
+      setTodoList(data);
     } catch (error) {
       console.log("Error: ", error);
     } finally {
@@ -50,15 +50,19 @@ const TodosProvider = ({ children }) => {
     );
 
     const updatedTodo = { ...todo, ...updatedFields };
+    delete updatedTodo._id;
 
     try {
-      const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTodo),
-      });
+      const response = await fetch(
+        `https://crudcrud.com/api/75338d9b2ea44fe4a20829796df7583f/todos/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedTodo),
+        }
+      );
       if (!response.ok) {
         throw new Error("Error updating the todo list");
       }
@@ -77,24 +81,27 @@ const TodosProvider = ({ children }) => {
 
   const addNewTodo = async (value) => {
     try {
-      const response = await fetch("https://api.nstack.in/v1/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: value,
-          description: "",
-          is_completed: false,
-        }),
-      });
+      const response = await fetch(
+        "https://crudcrud.com/api/75338d9b2ea44fe4a20829796df7583f/todos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: value,
+            description: "",
+            is_completed: false,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Something went wrong!");
       }
 
       const data = await response.json();
-      setTodoList((prev) => [...prev, data.data]);
+      setTodoList((prev) => [...prev, data]);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -102,12 +109,15 @@ const TodosProvider = ({ children }) => {
 
   const deleteTodo = async (id) => {
     try {
-      const response = await fetch(`https://api.nstack.in/v1/todos/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `https://crudcrud.com/api/75338d9b2ea44fe4a20829796df7583f/todos/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error deleting the todo");
